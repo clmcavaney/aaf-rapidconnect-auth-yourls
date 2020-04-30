@@ -1,11 +1,9 @@
 Heavily based on the Google Auth Yourls (https://github.com/8thwall/google-auth-yourls)
 
-*** FURTHER DOCUMENTATION REQUIRED HERE ***
-
 ### Installation
 1. Download this repo and extract the whole folder into `YOURLS/user/plugins`
 2. `cd` to the directory you just created
-3. Edit the config.php file (see below)
+3. Edit the config.php file in that directory (see below)
 
 At this point users will be able login, but their roles won't be defined.
 For that another plugin is required - [YOURLS-AuthMgrPlus](https://github.com/joshp23/YOURLS-AuthMgrPlus)
@@ -20,6 +18,8 @@ define('AAF_RAPIDCONNECT_AUTH_URL', 'https://rapid.test.aaf.edu.au/jwt/authnrequ
 define('AAF_RAPIDCONNECT_ISSUER', 'https://rapid.test.aaf.edu.au');
 define('AAF_RAPIDCONNECT_AUDIENCE', '<URL provided when you register your service>');
 ```
+
+To generate these head to AAF's Rapid Connect registration service - https://rapid.test.aaf.edu.au/
 
 License
 -------
