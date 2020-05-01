@@ -237,7 +237,7 @@ HTML;
 yourls_add_action( 'plugins_loaded', 'aaf_rapidconnect_add_page' );
 
 function aaf_rapidconnect_add_page() {
-	yourls_register_plugin_page( 'aaf_rapidconnect', 'AAF Rapid Connect', 'aaf_rapidconnect_do_page' );
+	yourls_register_plugin_page( 'aaf_rapidconnect', 'AAF Rapid Connect options', 'aaf_rapidconnect_do_page' );
 }
 
 // Display the plugin page
@@ -269,7 +269,7 @@ function aaf_rapidconnect_do_page() {
 	// heredoc to the form
 	echo <<<HTML
 	<div id="wrap">
-		<h2>AAF Rapid Connect</h2>
+		<h2>AAF Rapid Connect options</h2>
 		<form method="post" id="aaf_rapidconnect_form" name="aaf_rapidconnect_form">
 			<input type="hidden" name="nonce" value="$nonce" />
 
