@@ -195,14 +195,14 @@ function aaf_rapidconnect_login_screen() {
 	yourls_html_head( 'access', 'AAF Rapid Connect login' );
 	yourls_html_logo();
 
-	$aaf_logo = yourls_plugin_url( dirname(__FILE__) . '/includes/AAF-Service-Button-white-110x26.png' );
+	$aaf_logo_url = yourls_plugin_url( dirname(__FILE__) . '/includes/AAF-Service-Button-white-110x26.png' );
 ?>
 	<div id="login" style="margin-top: 100px;">
 	<p class="error"><?php echo yourls__( 'Please log in' ); ?></p>
 	<form action="<?php echo filter_var($aaf_rapidconnect_auth_url, FILTER_SANITIZE_URL); ?>" method="GET">
 		<input type="submit" id="launch-login-button" name="launch-login-button" value="<?php yourls_e( 'AAF login' ); ?>" class="button" /></div>
 	</form>
-	<p><a href="http://www.aaf.edu.au"><img src="<?php echo $aaf_logo; ?>" /></a></p>
+	<p><a href="http://www.aaf.edu.au"><img src="<?php echo $aaf_logo_url; ?>" /></a></p>
 	</div>
 <?php
 	yourls_html_footer();
