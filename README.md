@@ -8,6 +8,8 @@ Heavily based on the Google Auth Yourls (https://github.com/8thwall/google-auth-
 At this point users will be able login, but their roles won't be defined.
 For that another plugin is required - [YOURLS-AuthMgrPlus](https://github.com/joshp23/YOURLS-AuthMgrPlus)
 
+**NOTE** If you already have YOURLS-AuthMgrPlus enabled, you will need to give your default authentication username administrator rights so that you can access the plugins pages to configure the AAF Rapid Connect plugin.  Once that is configured you can remove the default user from the YOURLS-AuthMgrPlus administrator role (not 100% necessary - but keeps things clean).
+
 Configuration
 -------------
 You will need to specify the following values in the plugins options page for AAF Rapid Connect.
