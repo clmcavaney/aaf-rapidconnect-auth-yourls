@@ -3,7 +3,7 @@
 Plugin Name: AAF Rapid Connect Authentication
 Plugin URI: https://github.com/clmcavaney/aaf-rapidconnect-auth-yourls
 Description: This plugin enables authentation against AAF Rapid Connect
-Version: 1.1
+Version: 1.3
 Author: Christopher McAvaney
 Author URI: http://deakinresear.ch/eresearch
 */
@@ -66,6 +66,10 @@ function aaf_rapidconnect_auth() {
 	}
 
 	$aaf_rapidconnect_key = yourls_get_option( 'aaf_rapidconnect_key' );
+	if ( !$aaf_rapidconnect_key || empty($aaf_rapidconnect_key)  ) {
+		// isn't configured, so can't auth with AAF Rapid Connect, so pass back to existing authentication
+		return true;
+	}
 	$aaf_rapidconnect_auth_url = yourls_get_option( 'aaf_rapidconnect_auth_url' );
 	$aaf_rapidconnect_issuer = yourls_get_option( 'aaf_rapidconnect_issuer' );
 	$aaf_rapidconnect_audience = yourls_get_option( 'aaf_rapidconnect_audience' );
@@ -191,13 +195,14 @@ function aaf_rapidconnect_login_screen() {
 	yourls_html_head( 'access', 'AAF Rapid Connect login' );
 	yourls_html_logo();
 
+	$aaf_logo = yourls_plugin_url( dirname(__FILE__) . '/includes/AAF-Service-Button-white-110x26.png' );
 ?>
 	<div id="login" style="margin-top: 100px;">
 	<p class="error"><?php echo yourls__( 'Please log in' ); ?></p>
 	<form action="<?php echo filter_var($aaf_rapidconnect_auth_url, FILTER_SANITIZE_URL); ?>" method="GET">
 		<input type="submit" id="launch-login-button" name="launch-login-button" value="<?php yourls_e( 'AAF login' ); ?>" class="button" /></div>
 	</form>
-	<p><a href="http://www.aaf.edu.au"><img src="https://rapid.aaf.edu.au/aaf_service_110x26.png" /></a></p>
+	<p><a href="http://www.aaf.edu.au"><img src="<?php echo $aaf_logo; ?>" /></a></p>
 	</div>
 <?php
 	yourls_html_footer();
@@ -238,6 +243,10 @@ yourls_add_action( 'plugins_loaded', 'aaf_rapidconnect_add_page' );
 
 function aaf_rapidconnect_add_page() {
 	yourls_register_plugin_page( 'aaf_rapidconnect', 'AAF Rapid Connect options', 'aaf_rapidconnect_do_page' );
+
+	if ( !yourls_get_option( 'aaf_rapidconnect_key' ) ) {
+		aaf_rapidconnect_please_configure();
+	}
 }
 
 // Display the plugin page
@@ -266,49 +275,58 @@ function aaf_rapidconnect_do_page() {
 	$nonce = yourls_create_nonce( 'aaf_rapidconnect' );
 	yourls_debug_log( "aaf_rapidconnect_do_page() nonce == " . $nonce );
 
+	$aaf_logo_url = yourls_plugin_url( dirname(__FILE__) . '/includes/AAF-Service-Button-white-110x26.png' );
+
 	// heredoc to the form
 	echo <<<HTML
 	<div id="wrap">
-		<h2>AAF Rapid Connect options</h2>
-		<form method="post" id="aaf_rapidconnect_form" name="aaf_rapidconnect_form">
-			<input type="hidden" name="nonce" value="$nonce" />
+		<h2 style="margin-top: 0.25rem !important;">AAF Rapid Connect options</h2>
+		<p>To create the attributes required for this plugin, head to AAF's Rapid Connect registration service:<br />
+		TEST - <a href="https://rapid.test.aaf.edu.au/">https://rapid.test.aaf.edu.au/</a> or PROD - <a href="https://rapid.aaf.edu.au/">https://rapid.aaf.edu.au/</a></p>
+		<p><strong>Note:</strong> you need to be a member of the <a href="https://www.aaf.edu.au/">Australian Access Federation (AAF)</a> <a href="http://www.aaf.edu.au"><img src="$aaf_logo_url" style="vertical-align: text-bottom;" /></a></p>
+		<h3>Configure the plugin</h3>
+			<form method="post" id="aaf_rapidconnect_form" name="aaf_rapidconnect_form">
+				<input type="hidden" name="nonce" value="$nonce" />
 
-			<div>
-				<input type="hidden" name="aaf_rapidconnect_key" value="$aaf_rapidconnect_key" />
-				<label for="aaf_rapidconnect_key" form="aaf_rapidconnect_form">Key:</label>
-				<input type="text" value="$aaf_rapidconnect_key" id="aaf_rapidconnect_key" name="aaf_rapidconnect_key" size="32" />
-			</div>
+				<div>
+					<input type="hidden" name="aaf_rapidconnect_key" value="$aaf_rapidconnect_key" />
+					<label for="aaf_rapidconnect_key" form="aaf_rapidconnect_form">Key:</label>
+					<input type="text" value="$aaf_rapidconnect_key" id="aaf_rapidconnect_key" name="aaf_rapidconnect_key" size="32" />
+				</div>
 
-			<div>
-				<input type="hidden" name="aaf_rapidconnect_issuer" value="$aaf_rapidconnect_issuer" />
-				<label for="aaf_rapidconnect_issuer" form="aaf_rapidconnect_form">Issuer:</label>
-				<input type="text" value="$aaf_rapidconnect_issuer" id="aaf_rapidconnect_issuer" name="aaf_rapidconnect_issuer" size="32" />
-			</div>
+				<div>
+					<input type="hidden" name="aaf_rapidconnect_issuer" value="$aaf_rapidconnect_issuer" />
+					<label for="aaf_rapidconnect_issuer" form="aaf_rapidconnect_form">Issuer:</label>
+					<input type="text" value="$aaf_rapidconnect_issuer" id="aaf_rapidconnect_issuer" name="aaf_rapidconnect_issuer" size="32" />
+				</div>
 
-			<div>
-				<input type="hidden" name="aaf_rapidconnect_audience" value="$aaf_rapidconnect_audience" />
-				<label for="aaf_rapidconnect_audience" form="aaf_rapidconnect_form">Audience (URL of the instance):</label>
-				<input type="text" value="$aaf_rapidconnect_audience" id="aaf_rapidconnect_audience" name="aaf_rapidconnect_audience" size="32" />
-			</div>
+				<div>
+					<input type="hidden" name="aaf_rapidconnect_audience" value="$aaf_rapidconnect_audience" />
+					<label for="aaf_rapidconnect_audience" form="aaf_rapidconnect_form">Audience (URL of the instance):</label>
+					<input type="text" value="$aaf_rapidconnect_audience" id="aaf_rapidconnect_audience" name="aaf_rapidconnect_audience" size="32" />
+				</div>
 
-			<div>
-				<input type="hidden" name="aaf_rapidconnect_auth_url" value="$aaf_rapidconnect_auth_url" />
-				<label for="aaf_rapidconnect_auth_url" form="aaf_rapidconnect_form">Auth URL:</label>
-				<input type="text" value="$aaf_rapidconnect_auth_url" id="aaf_rapidconnect_auth_url" name="aaf_rapidconnect_auth_url" size="72" />
-			</div>
+				<div>
+					<input type="hidden" name="aaf_rapidconnect_auth_url" value="$aaf_rapidconnect_auth_url" />
+					<label for="aaf_rapidconnect_auth_url" form="aaf_rapidconnect_form">Auth URL:</label>
+					<input type="text" value="$aaf_rapidconnect_auth_url" id="aaf_rapidconnect_auth_url" name="aaf_rapidconnect_auth_url" size="72" />
+				</div>
 
-			<div>
-				<input type="hidden" name="aaf_attribute_user" value="$aaf_attribute_user" />
-				<label for="aaf_attribute_user" form="aaf_attribute_user">User attribute:</label>
-				<input type="text" value="$aaf_attribute_user" id="aaf_attribute_user" name="aaf_attribute_user" size="32" />
-			</div>
+				<div>
+					<input type="hidden" name="aaf_attribute_user" value="$aaf_attribute_user" />
+					<label for="aaf_attribute_user" form="aaf_attribute_user">User attribute:</label>
+					<input type="text" value="$aaf_attribute_user" id="aaf_attribute_user" name="aaf_attribute_user" size="32" />
+				</div>
 
-			<div>
-				<input type="submit" value="Submit" />
-			</div>
-		</form>
+				<div style="margin-top: 1rem;">
+					<input type="submit" value="Update options" />
+				</div>
+			</form>
 	</div>
 HTML;
 }
 
+function aaf_rapidconnect_please_configure() {
+	yourls_add_notice( 'Plugin <strong>AAF Rapid Connect</strong> is not configured' );
+}
 ?>
